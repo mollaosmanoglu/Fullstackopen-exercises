@@ -18,7 +18,6 @@ const App = () => {
 
     // Save filter input
     const handleFilterchange = (event) => {
-      console.log(event.target.value)
       setFilterText(event.target.value)
     }
 

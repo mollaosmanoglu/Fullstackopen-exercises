@@ -51,7 +51,7 @@ const CountryInformation = ({filteredData}) => {
 
     return (
         <div>
-            <p>'Too many matches, specify another filter'</p>
+            <p>Too many matches, specify another filter</p>
         </div>
     )
 }
