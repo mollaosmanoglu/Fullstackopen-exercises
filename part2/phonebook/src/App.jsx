@@ -21,12 +21,12 @@ const App = () => {
     const [errorMessage,
         setErrorMessage] = useState(null)
 
+
     // Here we fetch the data from the JSON server
     useEffect(() => {
         personService
             .getAll()
             .then(response => {
-                console.log(response.data)
                 setPersons(response.data)
             })
     }, [])
@@ -39,13 +39,15 @@ const App = () => {
             number: newNumber
         }
 
+
         // If the name is already in the phonebook we ask the user to proceed with
         // changing the number //
         if (persons.map(person => person.name).includes(new_person.name)) {
 
             const result = window.confirm(`${new_person.name} is already added to phonebook, replace the old number with a new one?`)
-            const id_number = persons.find(person => person.name === new_person.name)
-                ?.id
+            const id_number = persons
+                .find(person => person.name === new_person.name)
+                .id
 
             if (result) {
                 personService
@@ -58,29 +60,27 @@ const App = () => {
                     })
 
             } else {
-                console.log('Action aborted')
                 return
             }
-        }
-
-        // If no value in either input field an alert message pop ups
-        if (new_person.name === '' || new_person.number === '') {
-            alert('Please fill out all fields')
-            return
         }
 
         // Add data to the JSON server and create a completion message
         personService
             .create(new_person)
             .then(response => {
-                setPersons(persons.concat(response.data))
+                setPersons(response.data)
                 setNewName('')
                 setNewNumber('')
                 setCompletionMessage('Added ' + new_person.name)
                 setTimeout(() => {
                     setCompletionMessage(null)
+                }, 5000)   
+            })
+            .catch(error => {
+                setErrorMessage(error.response.data.error)
+                setTimeout(() => {
+                    setErrorMessage(null)
                 }, 5000)
-
             })
 
         console.log(completionMessage)
@@ -96,16 +96,16 @@ const App = () => {
             personService
                 .remove(id)
                 .then(response => {
-                    setPersons(prevPersons => prevPersons.filter(person => person.id !== id))
+                    setPersons(response.data)
                 })
                 .catch(error => {
                     if (error.response && error.response.status === 404) {
-                        setPersons(prevPersons => prevPersons.filter(person => person.id !== id))
                         console.log('Person was already deleted')
                         setErrorMessage('Information of ' + new_person[0].name + ' has already been removed from server')
                         setTimeout(() => {
                             setErrorMessage(null)
                         }, 5000)
+
                     } else {
                         console.error('Error deleting person:', error)
                     }
